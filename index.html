@@ -32,8 +32,13 @@ select{background:var(--soft);color:var(--ink);border-radius:8px;padding:.2rem .
 .lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 @keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
 .pop{animation:pop .25s ease-out}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}.step{transition:none}.step:hover{transform:none}}
 .pane[hidden]{display:none}
+.step{display:flex;align-items:center;gap:1rem;width:100%;padding:1rem 1.1rem;background:var(--card);border:1px solid var(--line);border-radius:16px;cursor:pointer;color:inherit;transition:transform .15s,border-color .15s,box-shadow .15s}
+.step:hover{transform:translateY(-2px);border-color:var(--brand);box-shadow:0 6px 18px rgba(15,107,79,.14)}
+.step-n{flex:none;width:2.75rem;height:2.75rem;border-radius:999px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.3rem}
+.step.final .step-n{background:var(--accent);color:#0E2B22}
+.step-go{flex:none;font-size:.8rem;font-weight:600;color:var(--brand);background:var(--soft);padding:.3rem .75rem;border-radius:999px}
 </style>
 </head>
 <body>
@@ -66,12 +71,24 @@ select{background:var(--soft);color:var(--ink);border-radius:8px;padding:.2rem .
       <span class="chip" data-i="chip1"></span><span class="chip" data-i="chip2"></span><span class="chip" data-i="chip3"></span>
     </div>
   </div>
-  <div class="card p-6 shadow-sm">
-    <h2 class="text-xl font-bold" data-i="how_h"></h2>
-    <ol class="mt-4 space-y-4">
-      <li class="flex gap-3"><span class="shrink-0 w-7 h-7 rounded-full grid place-items-center text-sm font-bold" style="background:var(--soft);color:var(--brand)">1</span><span data-i="how1"></span></li>
-      <li class="flex gap-3"><span class="shrink-0 w-7 h-7 rounded-full grid place-items-center text-sm font-bold" style="background:var(--soft);color:var(--brand)">2</span><span data-i="how2"></span></li>
-      <li class="flex gap-3"><span class="shrink-0 w-7 h-7 rounded-full grid place-items-center text-sm font-bold" style="background:var(--soft);color:var(--brand)">3</span><span data-i="how3"></span></li>
+  <div>
+    <h2 class="text-2xl font-bold mb-4" data-i="how_h"></h2>
+    <ol class="space-y-3">
+      <li><button type="button" class="step" data-go="bank">
+        <span class="step-n">1</span>
+        <span class="min-w-0 flex-1 text-left"><span class="block text-xl font-bold" data-i="how1_t"></span><span class="block mute text-sm mt-0.5" data-i="how1"></span></span>
+        <span class="step-go" data-i="try"></span>
+      </button></li>
+      <li><button type="button" class="step" data-go="exp">
+        <span class="step-n">2</span>
+        <span class="min-w-0 flex-1 text-left"><span class="block text-xl font-bold" data-i="how2_t"></span><span class="block mute text-sm mt-0.5" data-i="how2"></span></span>
+        <span class="step-go" data-i="try"></span>
+      </button></li>
+      <li><button type="button" class="step final" data-go="tax">
+        <span class="step-n">3</span>
+        <span class="min-w-0 flex-1 text-left"><span class="block text-xl font-bold" data-i="how3_t"></span><span class="block mute text-sm mt-0.5" data-i="how3"></span></span>
+        <span class="step-go" data-i="try"></span>
+      </button></li>
     </ol>
   </div>
 </section>
@@ -136,7 +153,7 @@ intro:'Koppla ditt bankkonto så sorterar Fisky varje transaktion, håller koll 
 email_label:'Få tidig tillgång när betan öppnar',email_ph:'du@dittforetag.se',join_btn:'Gå med i väntelistan',joined_btn:'Du står på listan',
 wl_hint:'Gratis under betan. Inget kort krävs. Avsluta när du vill.',wl_err:'Ange en giltig e-postadress, till exempel du@dittforetag.se.',wl_ok:'Du står på listan. Vi mejlar {e} när betan öppnar.',
 chip1:'Bankkoppling (kommer)',chip2:'Underlag till INK1 och NE-bilaga',chip3:'Avdragsmedvetna kategorier',
-how_h:'Så fungerar det',how1:'Ladda upp eller koppla dina banktransaktioner.',how2:'Fisky föreslår kategorier och du justerar vid behov.',how3:'Få ett färdigt underlag inför deklarationen.',
+how_h:'Så fungerar det',how1_t:'Ladda upp',how1:'Lägg in dina banktransaktioner.',how2_t:'Välj kategori',how2:'Fisky föreslår, du bekräftar.',how3_t:'Klart att deklarera',how3:'Ditt underlag, samlat och klart.',try:'Prova',
 prev_h:'Din bokföring, redan sorterad',prev_p:'Det här är en förhandsvisning med exempeldata. Prova att ändra en kategori.',
 tab_all:'Översikt',tab_bank:'Bankflöde',tab_exp:'Kostnader',tab_tax:'Deklaration',all:'Alla',feed_h:'Bankflöde',income:'Inkomst',
 cats_h:'Kostnader per kategori',cats_n:'avdragsgilla poster i månadens flöde',
@@ -152,7 +169,7 @@ intro:'Connect your bank and Fisky sorts every transaction, tracks your deductib
 email_label:'Get early access when the beta opens',email_ph:'you@yourbusiness.se',join_btn:'Join the waitlist',joined_btn:"You're on the list",
 wl_hint:'Free during the beta. No card needed. Cancel anytime.',wl_err:'Enter a valid email address, like you@yourbusiness.se.',wl_ok:"You're on the list. We'll email {e} when the beta opens.",
 chip1:'Bank connection (coming)',chip2:'INK1 and NE appendix basis',chip3:'Deduction-aware categories',
-how_h:'How it works',how1:'Upload or connect your bank transactions.',how2:'Fisky suggests categories and you adjust where needed.',how3:'Get a ready basis for your tax return.',
+how_h:'How it works',how1_t:'Upload',how1:'Add your bank transactions.',how2_t:'Pick a category',how2:'Fisky suggests, you confirm.',how3_t:'Ready to file',how3:'Your tax basis, gathered and ready.',try:'Try it',
 prev_h:'Your books, already sorted',prev_p:'This is a preview with dummy data. Try changing a category.',
 tab_all:'Overview',tab_bank:'Bank feed',tab_exp:'Expenses',tab_tax:'Tax return',all:'All',feed_h:'Bank feed',income:'Income',
 cats_h:'Expenses by category',cats_n:'deductible items in this month’s feed',
@@ -227,6 +244,7 @@ $('#waitlist').addEventListener('submit',e=>{
 $('#feed').addEventListener('change',e=>{if(!e.target.matches('select'))return;const x=tx[+e.target.dataset.i];x.c=e.target.value;render();toast(x.c==='pr'?t('t_priv'):t('t_cat').replace('{c}',t('c_'+x.c)))});
 $('#bankChips').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(!b)return;bank=b.dataset.b;document.querySelectorAll('#bankChips .chip').forEach(c=>c.setAttribute('aria-pressed',c===b));render()});
 $('#exportBtn').addEventListener('click',()=>toast(t('t_demo')));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{document.querySelector('[data-tab="'+b.dataset.go+'"]').click();document.getElementById('preview').scrollIntoView({behavior:'smooth'})}));
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
   const k=b.dataset.tab;document.querySelectorAll('.pane').forEach(p=>p.hidden=!(k==='all'||p.dataset.pane===k));
