@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fisky – Bokföring och deklarationsunderlag för enskilda firmor</title>
+<meta name="description" content="Fisky automatiserar bokföringen och förbereder underlaget till deklarationen för enskilda firmor i Sverige.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+:root{--bg:#F5F8F6;--card:#FFFFFF;--ink:#0E2B22;--mute:#5C7068;--line:#DCE5E0;--brand:#0F6B4F;--brand-ink:#FFFFFF;--accent:#F59E3B;--soft:#E6F1EC;--neg:#B4442F;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1713;--card:#12241D;--ink:#E8F2ED;--mute:#8FA79C;--line:#23392F;--brand:#3FB78A;--brand-ink:#05120D;--soft:#17332A;--neg:#F08A74}}
+:root[data-theme="dark"]{--bg:#0B1713;--card:#12241D;--ink:#E8F2ED;--mute:#8FA79C;--line:#23392F;--brand:#3FB78A;--brand-ink:#05120D;--soft:#17332A;--neg:#F08A74}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Figtree,system-ui,sans-serif;margin:0}
+h1,h2,h3,.logo{font-family:'Bricolage Grotesque',Figtree,sans-serif;letter-spacing:-.02em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.mute{color:var(--mute)}
+.btn{background:var(--brand);color:var(--brand-ink);font-weight:600;border-radius:10px;padding:.8rem 1.25rem;transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}.btn:disabled{opacity:.7}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:.25rem .75rem;font-size:.8rem;color:var(--mute)}
+button.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg button{padding:.45rem .9rem;border-radius:8px;font-weight:600;font-size:.9rem;color:var(--mute)}
+.seg button[aria-selected=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+select{background:var(--soft);color:var(--ink);border-radius:8px;padding:.2rem .4rem;font-size:.8rem;border:1px solid var(--line);max-width:11rem}
+.row{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.num{font-variant-numeric:tabular-nums}.pos{color:var(--brand)}
+.lang button{padding:.3rem .6rem;font-weight:600;font-size:.8rem;border-radius:6px;color:var(--mute)}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
+.pop{animation:pop .25s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+.pane[hidden]{display:none}
+</style>
+</head>
+<body>
+<header class="max-w-6xl mx-auto px-5 py-5 flex items-center justify-between gap-3">
+  <a href="#top" class="logo text-xl font-bold flex items-center gap-2"><span class="inline-grid place-items-center w-8 h-8 rounded-lg" style="background:var(--brand);color:var(--brand-ink)">F</span>Fisky</a>
+  <nav class="flex items-center gap-3 sm:gap-5 text-sm font-medium">
+    <a href="#preview" class="mute hover:opacity-80 hidden sm:inline" data-i="nav_prev"></a>
+    <div class="lang flex p-0.5 rounded-lg border" style="border-color:var(--line)" role="group" aria-label="Språk / Language">
+      <button data-lang="sv" aria-pressed="true">SV</button><button data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a href="#waitlist" class="btn !py-2 !px-4 text-sm" data-i="nav_join"></a>
+  </nav>
+</header>
+
+<main id="top">
+<section class="max-w-6xl mx-auto px-5 pt-10 pb-16 grid lg:grid-cols-[1.2fr_1fr] gap-12 items-center">
+  <div>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05]" data-i="h1"></h1>
+    <p class="mt-5 text-xl sm:text-2xl font-medium" data-i="sub"></p>
+    <p class="mt-3 mute max-w-xl" data-i="intro"></p>
+    <form id="waitlist" class="mt-8 max-w-xl" novalidate>
+      <label for="email" class="block text-sm font-semibold mb-2" data-i="email_label"></label>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input id="email" type="email" inputmode="email" autocomplete="email" data-ip="email_ph" class="flex-1 rounded-[10px] px-4 py-3 border text-base" style="background:var(--card);border-color:var(--line);color:var(--ink)" aria-describedby="wl-msg">
+        <button id="joinBtn" class="btn" type="submit" data-i="join_btn"></button>
+      </div>
+      <p id="wl-msg" class="mt-3 text-sm mute" role="status" aria-live="polite"></p>
+    </form>
+    <div class="mt-6 flex flex-wrap gap-2">
+      <span class="chip" data-i="chip1"></span><span class="chip" data-i="chip2"></span><span class="chip" data-i="chip3"></span>
+    </div>
+  </div>
+  <div class="card p-6 shadow-sm">
+    <h2 class="text-xl font-bold" data-i="how_h"></h2>
+    <ol class="mt-4 space-y-4">
+      <li class="flex gap-3"><span class="shrink-0 w-7 h-7 rounded-full grid place-items-center text-sm font-bold" style="background:var(--soft);color:var(--brand)">1</span><span data-i="how1"></span></li>
+      <li class="flex gap-3"><span class="shrink-0 w-7 h-7 rounded-full grid place-items-center text-sm font-bold" style="background:var(--soft);color:var(--brand)">2</span><span data-i="how2"></span></li>
+      <li class="flex gap-3"><span class="shrink-0 w-7 h-7 rounded-full grid place-items-center text-sm font-bold" style="background:var(--soft);color:var(--brand)">3</span><span data-i="how3"></span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="preview" class="max-w-6xl mx-auto px-5 pb-20">
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+    <div>
+      <h2 class="text-3xl font-bold" data-i="prev_h"></h2>
+      <p class="mute mt-1" data-i="prev_p"></p>
+    </div>
+    <div class="seg flex p-1 rounded-xl flex-wrap" style="background:var(--soft)" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="all" data-i="tab_all"></button>
+      <button role="tab" aria-selected="false" data-tab="bank" data-i="tab_bank"></button>
+      <button role="tab" aria-selected="false" data-tab="exp" data-i="tab_exp"></button>
+      <button role="tab" aria-selected="false" data-tab="tax" data-i="tab_tax"></button>
+    </div>
+  </div>
+  <div class="card overflow-hidden shadow-sm">
+    <div class="flex items-center gap-2 px-4 py-3 border-b" style="border-color:var(--line)">
+      <span class="w-3 h-3 rounded-full" style="background:#E5604D"></span><span class="w-3 h-3 rounded-full" style="background:#F2B84B"></span><span class="w-3 h-3 rounded-full" style="background:#4DBF8A"></span>
+      <span class="ml-3 text-xs mute">app.fisky.se / dashboard</span>
+    </div>
+    <div id="dash" class="p-4 sm:p-6 grid gap-5 lg:grid-cols-[1.3fr_1fr]">
+      <div class="pane" data-pane="bank" style="border:1px solid var(--line);border-radius:14px;padding:1rem">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <h3 class="text-lg font-semibold" data-i="feed_h"></h3>
+          <div class="flex gap-2" id="bankChips">
+            <button class="chip" aria-pressed="true" data-b="All" data-i="all"></button>
+            <button class="chip" aria-pressed="false" data-b="Swedbank">Swedbank</button>
+            <button class="chip" aria-pressed="false" data-b="Revolut">Revolut</button>
+          </div>
+        </div>
+        <div id="feed"></div>
+      </div>
+      <div class="grid gap-5 content-start">
+        <div class="pane" data-pane="tax" style="border:1px solid var(--line);border-radius:14px;padding:1rem;background:var(--soft)">
+          <div class="flex items-center justify-between"><h3 class="text-lg font-semibold" data-i="tax_h"></h3><span class="text-xs mute" data-i="ytd"></span></div>
+          <p class="mute text-sm mt-1" data-i="tax_total"></p>
+          <p id="taxTotal" class="logo text-4xl font-bold num pop">0</p>
+          <dl id="taxRows" class="mt-3 text-sm"></dl>
+          <p class="text-xs mute mt-3" data-i="tax_note"></p>
+          <button id="exportBtn" class="btn w-full mt-3 text-sm" data-i="tax_btn"></button>
+        </div>
+        <div class="pane" data-pane="exp" style="border:1px solid var(--line);border-radius:14px;padding:1rem">
+          <h3 class="text-lg font-semibold mb-2" data-i="cats_h"></h3>
+          <div id="cats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="max-w-6xl mx-auto px-5 pb-12 text-sm mute" data-i="foot"></footer>
+<div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-lg text-sm font-medium hidden" style="background:var(--ink);color:var(--bg);margin-bottom:env(safe-area-inset-bottom,0px)" role="status"></div>
+
+<script>
+const L={
+sv:{title:'Fisky – Bokföring och deklarationsunderlag för enskilda firmor',nav_prev:'Se översikten',nav_join:'Gå med i väntelistan',
+h1:'Automatisk bokföring och deklarationsunderlag för enskilda firmor.',sub:'Ingen redovisningsbyrå behövs. Kommer snart.',
+intro:'Koppla ditt bankkonto så sorterar Fisky varje transaktion, håller koll på avdragsgilla kostnader och förbereder underlaget till din inkomstdeklaration (INK1 med NE-bilaga).',
+email_label:'Få tidig tillgång när betan öppnar',email_ph:'du@dittforetag.se',join_btn:'Gå med i väntelistan',joined_btn:'Du står på listan',
+wl_hint:'Gratis under betan. Inget kort krävs. Avsluta när du vill.',wl_err:'Ange en giltig e-postadress, till exempel du@dittforetag.se.',wl_ok:'Du står på listan. Vi mejlar {e} när betan öppnar.',
+chip1:'Bankkoppling (kommer)',chip2:'Underlag till INK1 och NE-bilaga',chip3:'Avdragsmedvetna kategorier',
+how_h:'Så fungerar det',how1:'Ladda upp eller koppla dina banktransaktioner.',how2:'Fisky föreslår kategorier och du justerar vid behov.',how3:'Få ett färdigt underlag inför deklarationen.',
+prev_h:'Din bokföring, redan sorterad',prev_p:'Det här är en förhandsvisning med exempeldata. Prova att ändra en kategori.',
+tab_all:'Översikt',tab_bank:'Bankflöde',tab_exp:'Kostnader',tab_tax:'Deklaration',all:'Alla',feed_h:'Bankflöde',income:'Inkomst',
+cats_h:'Kostnader per kategori',cats_n:'avdragsgilla poster i månadens flöde',
+tax_h:'Underlag till NE-bilaga',ytd:'Hittills i år',tax_total:'Beräknat resultat före skatt',
+r_inc:'Intäkter',r_exp:'Avdragsgilla kostnader',r_res:'Resultat',r_eg:'Egenavgifter (ca 28,97 %)',
+tax_note:'Endast en uppskattning med förenklade, illustrativa uppgifter. Inte skatterådgivning.',tax_btn:'Förbered underlag (demo)',
+t_priv:'Markerad som privat. Borttagen från avdragsgilla kostnader.',t_cat:'Kategori: {c}. Underlaget är uppdaterat.',t_demo:'Underlag förberett (demo). Export och inlämning kommer i betan.',
+foot:'© 2026 Fisky. Prototyp med exempeldata. Inte kopplad till Swedbank, Revolut eller Skatteverket.',
+c_sw:'Programvara',c_tr:'Resor',c_ut:'El och internet',c_of:'Kontor',c_pr:'Privat (ej avdragsgill)'},
+en:{title:'Fisky – Bookkeeping and tax return prep for Swedish sole traders',nav_prev:'See the dashboard',nav_join:'Join the waitlist',
+h1:'Automated bookkeeping and tax return prep for Swedish sole traders.',sub:'No accounting firm needed. Coming soon.',
+intro:'Connect your bank and Fisky sorts every transaction, tracks your deductible costs and prepares the basis for your income tax return (INK1 with the NE appendix).',
+email_label:'Get early access when the beta opens',email_ph:'you@yourbusiness.se',join_btn:'Join the waitlist',joined_btn:"You're on the list",
+wl_hint:'Free during the beta. No card needed. Cancel anytime.',wl_err:'Enter a valid email address, like you@yourbusiness.se.',wl_ok:"You're on the list. We'll email {e} when the beta opens.",
+chip1:'Bank connection (coming)',chip2:'INK1 and NE appendix basis',chip3:'Deduction-aware categories',
+how_h:'How it works',how1:'Upload or connect your bank transactions.',how2:'Fisky suggests categories and you adjust where needed.',how3:'Get a ready basis for your tax return.',
+prev_h:'Your books, already sorted',prev_p:'This is a preview with dummy data. Try changing a category.',
+tab_all:'Overview',tab_bank:'Bank feed',tab_exp:'Expenses',tab_tax:'Tax return',all:'All',feed_h:'Bank feed',income:'Income',
+cats_h:'Expenses by category',cats_n:'deductible items in this month’s feed',
+tax_h:'NE appendix basis',ytd:'Year to date',tax_total:'Estimated profit before tax',
+r_inc:'Revenue',r_exp:'Deductible expenses',r_res:'Profit',r_eg:'Self-employment contributions (approx. 28.97%)',
+tax_note:'Estimate only, using simplified, illustrative figures. Not tax advice.',tax_btn:'Prepare basis (demo)',
+t_priv:'Marked as personal. Removed from deductible expenses.',t_cat:'Category: {c}. Basis updated.',t_demo:'Basis prepared (demo). Export and filing come in the beta.',
+foot:'© 2026 Fisky. Prototype with dummy data. Not affiliated with Swedbank, Revolut or Skatteverket.',
+c_sw:'Software',c_tr:'Travel',c_ut:'Utilities and internet',c_of:'Office',c_pr:'Personal (not deductible)'}};
+
+const $=s=>document.querySelector(s);
+let lang='sv';try{lang=localStorage.getItem('fisky_lang')||'sv'}catch(e){}
+if(!L[lang])lang='sv';
+const t=k=>L[lang][k];
+const loc=()=>lang==='sv'?'sv-SE':'en-GB';
+const money=(n,d=0)=>new Intl.NumberFormat(loc(),{style:'currency',currency:'SEK',minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
+const toast=m=>{const x=$('#toast');x.textContent=m;x.classList.remove('hidden');clearTimeout(toast.h);toast.h=setTimeout(()=>x.classList.add('hidden'),2600)};
+
+const CATS=['sw','tr','ut','of','pr'];
+const tx=[
+ {d:14,b:'Swedbank',n:'Lindqvist Design (031)',a:24000,c:'in'},
+ {d:14,b:'Swedbank',n:'Adobe Creative Cloud',a:-689,c:'sw'},
+ {d:13,b:'Revolut',n:'Nordic Media (032)',a:18500,c:'in'},
+ {d:12,b:'Swedbank',n:'SJ Stockholm–Göteborg',a:-549,c:'tr'},
+ {d:11,b:'Revolut',n:'Notion Labs',a:-105,c:'sw'},
+ {d:10,b:'Swedbank',n:'Vattenfall',a:-920,c:'ut'},
+ {d:9,b:'Revolut',n:'Staples',a:-420,c:'of'},
+ {d:8,b:'Revolut',n:'ICA Maxi',a:-830,c:'pr'},
+ {d:7,b:'Revolut',n:'Telia bredband',a:-399,c:'ut'}];
+const base={inc:410000,exp:31500};
+let bank='All',wl={k:'wl_hint'};
+
+function render(){
+  const df=new Intl.DateTimeFormat(loc(),{day:'numeric',month:'short'});
+  $('#feed').innerHTML=tx.map((x,i)=>({x,i})).filter(({x})=>bank==='All'||x.b===bank).map(({x,i})=>`
+   <div class="row">
+    <div class="w-9 h-9 rounded-lg grid place-items-center text-xs font-bold shrink-0" style="background:${x.b==='Swedbank'?'#E8590C':'#1D2B3A'};color:#fff" aria-label="${x.b}">${x.b==='Swedbank'?'Sw':'Rev'}</div>
+    <div class="min-w-0 flex-1"><p class="font-medium truncate">${x.n}</p><p class="text-xs mute">${df.format(new Date(2026,10,x.d))} · ${x.b}</p></div>
+    <div class="text-right">
+      <p class="num font-semibold ${x.a>0?'pos':''}">${(x.a>0?'+':'')+money(x.a,2)}</p>
+      ${x.a>0?`<span class="text-xs mute">${t('income')}</span>`:`<select data-i="${i}" aria-label="${x.n}">${CATS.map(c=>`<option value="${c}" ${c===x.c?'selected':''}>${t('c_'+c)}</option>`).join('')}</select>`}
+    </div></div>`).join('');
+  const ded=tx.filter(x=>x.a<0&&x.c!=='pr'),by={};
+  ded.forEach(x=>by[x.c]=(by[x.c]||0)+Math.abs(x.a));
+  const mx=Math.max(1,...Object.values(by));
+  $('#cats').innerHTML=Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`
+   <div class="py-2"><div class="flex justify-between text-sm"><span>${t('c_'+c)}</span><span class="num font-medium">${money(v,2)}</span></div>
+   <div class="h-1.5 rounded-full mt-1" style="background:var(--soft)"><div class="h-full rounded-full" style="width:${v/mx*100}%;background:var(--accent)"></div></div></div>`).join('')
+   +`<p class="text-xs mute mt-2">${ded.length} ${t('cats_n')}</p>`;
+  const inc=base.inc+tx.filter(x=>x.a>0).reduce((s,x)=>s+x.a,0),exp=base.exp+ded.reduce((s,x)=>s-x.a,0),res=inc-exp,eg=Math.max(0,res)*.2897;
+  $('#taxTotal').textContent=money(res);
+  const rows=[['r_inc',inc],['r_exp',-exp],['r_res',res,1],['r_eg',eg]];
+  $('#taxRows').innerHTML=rows.map(([k,v,b])=>`<div class="flex justify-between gap-3 py-1 ${b?'font-semibold border-y my-1':''}" style="border-color:var(--line)"><dt class="${b?'':'mute'}">${t(k)}</dt><dd class="num shrink-0">${money(v)}</dd></div>`).join('');
+  const tc=$('#taxTotal');tc.classList.remove('pop');void tc.offsetWidth;tc.classList.add('pop');
+}
+function wlRender(){const m=$('#wl-msg');m.textContent=t(wl.k).replace('{e}',wl.e||'');m.style.color=wl.k==='wl_err'?'var(--neg)':wl.k==='wl_ok'?'var(--brand)':''}
+function applyLang(){
+  document.documentElement.lang=lang;document.title=t('title');
+  document.querySelectorAll('[data-i]').forEach(e=>{if(e.tagName!=='SELECT'&&!e.dataset.i.match(/^\d+$/))e.textContent=t(e.dataset.i)});
+  document.querySelectorAll('[data-ip]').forEach(e=>e.placeholder=t(e.dataset.ip));
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  if(wl.k==='wl_ok')$('#joinBtn').textContent=t('joined_btn');
+  wlRender();render();
+}
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{lang=b.dataset.lang;try{localStorage.setItem('fisky_lang',lang)}catch(e){}applyLang()}));
+
+$('#waitlist').addEventListener('submit',e=>{
+  e.preventDefault();const v=$('#email').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)){wl={k:'wl_err'};wlRender();$('#email').focus();return}
+  wl={k:'wl_ok',e:v};$('#joinBtn').disabled=true;$('#email').disabled=true;applyLang();
+});
+$('#feed').addEventListener('change',e=>{if(!e.target.matches('select'))return;const x=tx[+e.target.dataset.i];x.c=e.target.value;render();toast(x.c==='pr'?t('t_priv'):t('t_cat').replace('{c}',t('c_'+x.c)))});
+$('#bankChips').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(!b)return;bank=b.dataset.b;document.querySelectorAll('#bankChips .chip').forEach(c=>c.setAttribute('aria-pressed',c===b));render()});
+$('#exportBtn').addEventListener('click',()=>toast(t('t_demo')));
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  const k=b.dataset.tab;document.querySelectorAll('.pane').forEach(p=>p.hidden=!(k==='all'||p.dataset.pane===k));
+  $('#dash').style.gridTemplateColumns=k==='all'?'':'1fr';
+}));
+applyLang();
+</script>
+</body>
+</html>
